@@ -1,0 +1,7 @@
+<%- include('layout', { title: 'Login', content: `
+<h2>Login</h2>
+<form action="/auth/login" method="POST">
+  <input type="email" name="email" placeholder="Email" required />
+  <button type="submit">Login</button>
+</form>
+`}) %>
