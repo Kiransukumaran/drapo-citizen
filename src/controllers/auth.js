@@ -4,21 +4,40 @@ const SignupModel = require('../models/signup').default;
 
 const AuthController = {
   signup: async (req, res) => {
-    const { fullName, email, password, phone, dateOfBirth, nationality } =
-      req.body;
-    if (!fullName || !email || !password) {
+    console.log(req.body);
+    const {
+      displayName,
+      surname,
+      email,
+      password,
+      gender,
+      phone,
+      dateOfBirth,
+      nationality,
+      nameOfFather,
+      nameOfMother,
+      nameOfSpouse,
+      address,
+    } = req.body;
+    if (!email || !password) {
       return res
         .status(400)
-        .json({ error: 'Full name, email, and password are required' });
+        .json({ error: 'Email, and password are required' });
     }
 
     const userData = {
-      fullName,
+      displayName,
       email,
       password,
       phone,
       dateOfBirth,
       nationality,
+      surname,
+      gender,
+      nameOfFather,
+      nameOfMother,
+      nameOfSpouse,
+      address,
     };
     const result = await SignupModel.registerUser(userData);
 

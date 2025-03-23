@@ -17,7 +17,7 @@ const generateUser = () => ({
   nameOfMother: faker.person.fullName(),
   nameOfSpouse: Math.random() < 0.5 ? faker.person.fullName() : 'N/A', // 50% chance of having a spouse
   address: faker.location.streetAddress(),
-  fileNumber: faker.number.int({ min: 1000000000, max: 9999999999 }), // 10-digit number
+  fileNumber: crypto.randomUUID(),
   phone: faker.phone.number(),
   dateOfBirth: faker.date.birthdate(),
 });

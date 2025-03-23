@@ -4,6 +4,7 @@ const {
 } = require('firebase/auth');
 const { firestore, auth, authClient } = require('../config/firebase');
 const { omit } = require('lodash');
+const { generateDID } = require('../utils/ether');
 
 const SignupModel = {
   registerUser: async (userData) => {
@@ -17,9 +18,11 @@ const SignupModel = {
       const userDoc = {
         ...omit(userData, ['email', 'password', 'displayName']),
         uid: userRecord.uid,
-        did: crypto.randomUUID(),
+        publicId: crypto.randomUUID(),
+        did: generateDID(userRecord.uid),
         reputation: 0,
         createdAt: new Date(),
+        fileNumber: crypto.randomUUID(),
       };
 
       // Store user in Firestore

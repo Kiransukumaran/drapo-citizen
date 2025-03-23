@@ -3,7 +3,7 @@
     <div class="signup-card">
       <h2>📝 Citizen Registration</h2>
 
-      <form action="/auth/signup" method="POST" class="signup-form" enctype="multipart/form-data">
+      <form action="/auth/signup" method="POST" class="signup-form" enctype="multipart/form-data" id="signUpForm">
         <div class="input-group">
           <input type="text" name="displayName" placeholder="First Name" required>
           <input type="text" name="surname" placeholder="Last Name" required>
@@ -185,5 +185,22 @@
         })
         .catch(error => console.error("Camera access denied:", error));
     }
+
+    document.getElementById("signUpForm").addEventListener("submit", async function (event) {
+      event.preventDefault(); // Prevent default form submission
+      const formData = new FormData(event.target);
+
+      const data = Object.fromEntries(formData.entries()); // Convert to JSON object
+      console.log("Submitted Data:", data);
+
+      const response = await fetch("/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+      console.log(result);
+    });
   </script>
 ` }) %>

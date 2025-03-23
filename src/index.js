@@ -2,6 +2,7 @@ const express = require('express');
 const dotenv = require('dotenv');
 const admin = require('firebase-admin');
 const path = require('path');
+const cors = require('cors');
 
 // Load environment variables
 dotenv.config();
@@ -9,9 +10,6 @@ dotenv.config();
 const serviceAccount = require('./config/service-account.json');
 const router = require('./routes');
 const morgan = require('morgan');
-const { RedisStore } = require('connect-redis');
-const { redis } = require('./utils/redis');
-const session = require('express-session');
 
 if (!admin.apps.length) {
   admin.initializeApp({
@@ -21,6 +19,7 @@ if (!admin.apps.length) {
 }
 
 const app = express();
+app.use(cors());
 app.use(morgan('tiny'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

@@ -1,4 +1,5 @@
 const DIDModel = require('../models/did');
+const UserModel = require('../models/user');
 
 const DIDController = {
   createDID: async (req, res) => {
@@ -26,13 +27,13 @@ const DIDController = {
 
   renderDID: async (req, res) => {
     try {
-      // const userId = req.user.uid;
-      // const did = await DIDModel.getDID(userId);
+      const userId = req.query.userId;
+      const user = await UserModel.getUser(userId);
 
-      // if (!did) {
-      //   return res.status(404).json({ error: 'DID not found' });
-      // }
-      res.render('did/view', { did: null });
+      if (!user) {
+        return res.status(404).json({ error: 'DID not found' });
+      }
+      res.render('did/view', { did: user.did });
     } catch (error) {
       console.log(error);
       res.status(500).send('Error loading DID');
