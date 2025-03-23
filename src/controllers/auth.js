@@ -1,37 +1,52 @@
-const admin = require("firebase-admin");
-const { createUserProfile } = require("../services/firebase");
+const { loginUser } = require('../models/signup');
 
-exports.renderSignup = (req, res) => {
-  res.render("signup", { title: "Signup" });
+const SignupModel = require('../models/signup').default;
+
+const AuthController = {
+  signup: async (req, res) => {
+    const { fullName, email, password, phone, dateOfBirth, nationality } =
+      req.body;
+    if (!fullName || !email || !password) {
+      return res
+        .status(400)
+        .json({ error: 'Full name, email, and password are required' });
+    }
+
+    const userData = {
+      fullName,
+      email,
+      password,
+      phone,
+      dateOfBirth,
+      nationality,
+    };
+    const result = await SignupModel.registerUser(userData);
+
+    if (result.success) {
+      res
+        .status(201)
+        .json({ message: 'User registered successfully', uid: result.uid });
+    } else {
+      res.status(400).json({ error: result.error });
+    }
+  },
+
+  login: async (req, res) => {
+    const user = await loginUser(req.body.email, req.body.password);
+    if (user.success) {
+      return res.redirect(`/user/dashboard?userId=${user.user.uid}`);
+    }
+    return res.status(401).json({ message: 'Unauthorized' });
+  },
+
+  logout: async (req, res) => {
+    return res
+      .status(200)
+      .json({ message: 'User logged out (client-side should clear token)' });
+  },
+
+  renderLogin: async (req, res) => res.render('auth/login'),
+  renderSignup: async (req, res) => res.render('auth/signup'),
 };
 
-exports.renderLogin = (req, res) => {
-  res.render("login", { title: "Login" });
-};
-
-exports.signup = async (req, res) => {
-  const { email, password, displayName } = req.body;
-  try {
-    const user = await admin
-      .auth()
-      .createUser({ email, password, displayName });
-    await createUserProfile(user);
-    res.redirect("/auth/login");
-  } catch (error) {
-    res.status(400).send(error.message);
-  }
-};
-
-exports.login = async (req, res) => {
-  const { email } = req.body;
-  try {
-    const user = await admin.auth().getUserByEmail(email);
-    res.redirect(`/user/dashboard?uid=${user.uid}`);
-  } catch (error) {
-    res.status(400).send("Invalid email");
-  }
-};
-
-exports.logout = (req, res) => {
-  res.redirect("/auth/login");
-};
+module.exports = AuthController;
